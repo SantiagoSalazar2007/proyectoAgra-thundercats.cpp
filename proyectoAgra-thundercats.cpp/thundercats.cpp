@@ -16,12 +16,12 @@ int nInter;
 int MAX = INT_MAX;
 
 void dijkstraEstados(int s){
-    pair<int> actual, adyacencia;
+    pair<int, int> actual, adyacencia;
     int i, du, u, v, duv;
     vector<int> dist(nInter, MAX);
     priority_queue<pair<int, int>> pqueue;       // falta definir bien los estados y cada elemento que se mete a la pq (recordar que son diferentes)
     dist[s] = 0;
-    pqueue.push(s);
+    pqueue.push(make_pair(0, s));
 
     while(!pqueue.empty()){
         actual = pqueue.top(); pqueue.pop();
@@ -29,7 +29,7 @@ void dijkstraEstados(int s){
         u = actual.second;
 
         if(dist[u] == du){
-            for(i = 0; i < ady[u]; i++){
+            for(i = 0; i < ady[u].size(); i++){
                 adyacencia = ady[u][i];
                 duv = ady[u][i].second;              // Dijkstra base que se debe utilizar 
                 v = ady[u][i].first;                 // Analizar bien los estados para unificar un solo dijkstra que funcione para lion y los mutantes y que los haga mover al mismo tiempo
@@ -39,7 +39,7 @@ void dijkstraEstados(int s){
                     pqueue.push(make_pair(dist[v], v));
                 }
             }
-        }hac
+        }
     }
 
 }
@@ -54,9 +54,9 @@ void iniciarSimulacion(){
 
         for(i = 0; i < mCaminos; i++){
             scanf("%d %d %d", &aOrigen, &bDestino, &dCientosMetros);
-            dCientosMetros = dCientosMetros / 1000;
+            dCientosMetros = (dCientosMetros * 100) / 1000;
             ady[aOrigen].push_back(make_pair(bDestino, dCientosMetros));
-            ady[bDestino].push_back(make_pair(aOrigen, dCientosMetros))  
+            ady[bDestino].push_back(make_pair(aOrigen, dCientosMetros));  
         }
         scanf("%d %d", &iniLion, &iniMutantes);
 
