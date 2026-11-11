@@ -54,6 +54,7 @@ void iniciarSimulacion(){
 
         for(i = 0; i < mCaminos; i++){
             scanf("%d %d %d", &aOrigen, &bDestino, &dCientosMetros);
+            dCientosMetros = dCientosMetros / 1000;
             ady[aOrigen].push_back(make_pair(bDestino, dCientosMetros));
             ady[bDestino].push_back(make_pair(aOrigen, dCientosMetros))  
         }
