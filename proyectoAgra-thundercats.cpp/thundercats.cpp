@@ -15,7 +15,9 @@ vector<bool> esSalida;
 int nInter;
 int MAX = INT_MAX;
 
+int dijkstraBBinaria(){
 
+}
 
 vector<int> dijkstraEstados(int s){
     pair<int, int> actual, adyacencia;
@@ -49,6 +51,7 @@ vector<int> dijkstraEstados(int s){
 void iniciarSimulacion(){
 
     int i, tCasos, caso, mCaminos, kSalidas, vMax, aOrigen, bDestino, dCientosMetros, iniLion, iniMutantes;
+    vector<int> distM;
     for(caso = 1; caso <= tCasos; caso++){
         scanf("%d %d %d %d", &nInter, &mCaminos, &kSalidas, &vMax);
         ady.assign(nInter + 1, vector<pair<int, int>>());
@@ -65,7 +68,13 @@ void iniciarSimulacion(){
         for(i = 0; i < kSalidas; i++){
             scanf("%d", &nInter);
             esSalida[nInter] = true; // esto probablemente lo cambie por una mascara de bits
+        }   
+        if(iniLion != iniMutantes){
+            distM = dijkstraEstados(iniMutantes);
+        } else {
+            printf("Mumm-Ra captures Lion-O!\n");
         }
+            
     }
 }
 
