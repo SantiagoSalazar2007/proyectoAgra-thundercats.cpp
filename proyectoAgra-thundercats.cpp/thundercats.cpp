@@ -15,11 +15,13 @@ vector<bool> esSalida;
 int nInter;
 int MAX = INT_MAX;
 
-void dijkstraEstados(int s){
+
+
+vector<int> dijkstraEstados(int s){
     pair<int, int> actual, adyacencia;
     int i, du, u, v, duv;
     vector<int> dist(nInter, MAX);
-    priority_queue<pair<int, int>> pqueue;       // falta definir bien los estados y cada elemento que se mete a la pq (recordar que son diferentes)
+    priority_queue<pair<int, int>> pqueue;       
     dist[s] = 0;
     pqueue.push(make_pair(0, s));
 
@@ -31,8 +33,8 @@ void dijkstraEstados(int s){
         if(dist[u] == du){
             for(i = 0; i < ady[u].size(); i++){
                 adyacencia = ady[u][i];
-                duv = ady[u][i].second;              // Dijkstra base que se debe utilizar 
-                v = ady[u][i].first;                 // Analizar bien los estados para unificar un solo dijkstra que funcione para lion y los mutantes y que los haga mover al mismo tiempo
+                duv = ady[u][i].second;              
+                v = ady[u][i].first;                 
 
                 if(du + duv < dist[v]){
                     dist[v] = du + duv;
@@ -41,7 +43,7 @@ void dijkstraEstados(int s){
             }
         }
     }
-
+    return dist;
 }
 
 void iniciarSimulacion(){
