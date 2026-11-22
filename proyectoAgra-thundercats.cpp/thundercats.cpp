@@ -15,7 +15,37 @@ int nInter;
 const long long INF = 1e18;
 const double EPS = 1e-8; // agregamos epsilon necesario para la bbinaria
 
-double 
+
+vector<long long> dijkstraMutantes(int s){
+    pair<long long, int> actual;
+    pair<int, int> adyacencia;
+    int i, u, v;
+    long long du, duv;
+    vector<long long> dist(nInter + 1, INF);
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pqueue;
+    dist[s] = 0;
+    pqueue.push(make_pair(0, s));
+
+    while(!pqueue.empty()){
+        actual = pqueue.top(); pqueue.pop();
+        du = actual.first;
+        u = actual.second;
+
+        if(dist[u] == du){
+            for(i = 0; i < ady[u].size(); i++){
+                adyacencia = ady[u][i];
+                v = adyacencia.first;
+                duv = adyacencia.second;
+
+                if(du + duv < dist[v]){
+                    dist[v] = du + duv;
+                    pqueue.push(make_pair(dist[v], v));
+                }
+            }
+        }
+    }
+    return dist;
+}
 
 bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long long>& distM){
     pair<long long, int> actual;
@@ -53,41 +83,27 @@ bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long
     return flag;
 }
 
-vector<long long> dijkstraMutantes(int s){
-    pair<long long, int> actual;
-    pair<int, int> adyacencia;
-    int i, u, v;
-    long long du, duv;
-    vector<long long> dist(nInter + 1, INF);
-    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pqueue;
-    dist[s] = 0;
-    pqueue.push(make_pair(0LL, s));
-
-    while(!pqueue.empty()){
-        actual = pqueue.top(); pqueue.pop();
-        du = actual.first;
-        u = actual.second;
-
-        if(dist[u] == du){
-            for(i = 0; i < ady[u].size(); i++){
-                adyacencia = ady[u][i];
-                v = adyacencia.first;
-                duv = adyacencia.second;
-
-                if(du + duv < dist[v]){
-                    dist[v] = du + duv;
-                    pqueue.push(make_pair(dist[v], v));
-                }
-            }
+double busquedaBinaria(int iniLion, int vMax, long long cotaSuperior, vector<long long>& distM){
+    double lo, hi, mid;
+    lo = 0;
+    hi = vMax * cotaSuperior; 
+    mid = (lo + hi) / 2;
+    while(hi - lo > EPS && mid > lo && mid < hi){
+        if(dijkstraProbarVelocidad(mid, iniLion, vMax, distM)){
+            hi = mid;
+        } else {
+            lo = mid;
         }
+        mid = (lo + hi) / 2;
     }
-    return dist;
+    return hi;
 }
 
 void iniciarSimulacion(){
     int i, tCasos, caso, mCaminos, kSalidas, vMax, aOrigen, bDestino, dCientosMetros, iniLion, iniMutantes, salida;
     vector<long long> distM;
     long long cotaSuperior;
+    double velMinima;
 
     scanf("%d", &tCasos);
     for(caso = 1; caso <= tCasos; caso++){
@@ -114,7 +130,8 @@ void iniciarSimulacion(){
         if(iniLion == iniMutantes || !dijkstraProbarVelocidad(1e18, iniLion, vMax, distM)){ // se prueba tambien que la ruta sea posible usando la maxima velocidad posible
             printf("Mumm-Ra captures Lion-O!\n");
         } else {
-
+            velMinima = busquedaBinaria(iniLion, vMax, cotaSuperior, distM);
+            printf("Lion-O can escape at a speed of %.6f km/h!\n", velMinima);
         }
     }
 }
