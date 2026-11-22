@@ -4,7 +4,6 @@
 #include <vector>
 #include <utility>
 #include <queue>
-#include <tuple>
 #include <climits>
 
 using namespace std;
@@ -13,17 +12,46 @@ vector<vector<pair<int, int>>> ady;
 vector<bool> esSalida;
 
 int nInter;
-int MAX = INT_MAX;
+unsigned int INF = 1e18;
 
-int dijkstraBBinaria(){
-
+bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long long>& distM, vector<bool>& esSalida){
+    pair<int, int> actual, adyacencia;
+    int i, u, v;
+    long long du, duv, distAcumuladaNodo;
+    int flag = false;
+    vector<long long> dist(nInter + 1, INF);
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pqueue;
+    dist[s] = 0;
+    cola.push(make_pair(0, s));
+    while(!cola.empty() && !flag) {
+        actual = pqueue.top(); pqueue.pop;
+        du = actual.first;
+        u = actual.second;
+        if(dist[u] == du){
+            if(esSalida[u]){
+                flag == true;
+            } else {
+                for(i = 0; i < ady[u].size(); i++){
+                    adyacencia = ady[u][i];
+                    duv = adyacencia.second;
+                    v = adyacencia.first;
+                    distAcumuladaNodo = du + duv;
+                    if(velMutantes * distAcumuladaNodo <= velLion * distM[duv]){ // si lion puede llegar al nodo mas rapido o igual que los mutantes
+                        dist[duv] = distAcumuladaNodo;
+                        pqueue.push(make_pair(distAcumuladaNodo, v));
+                }
+            }
+        }
+    }
+    return flag
 }
 
-vector<int> dijkstraEstados(int s){
+vector<long long> dijkstraMutantes(int s){
     pair<int, int> actual, adyacencia;
-    int i, du, u, v, duv;
-    vector<int> dist(nInter, MAX);
-    priority_queue<pair<int, int>> pqueue;       
+    int i, u, v;
+    long long du, duv;
+    vector<long long> dist(nInter, INF);
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pqueue;       
     dist[s] = 0;
     pqueue.push(make_pair(0, s));
 
@@ -35,8 +63,8 @@ vector<int> dijkstraEstados(int s){
         if(dist[u] == du){
             for(i = 0; i < ady[u].size(); i++){
                 adyacencia = ady[u][i];
-                duv = ady[u][i].second;              
-                v = ady[u][i].first;                 
+                duv = adyacencia.second;              
+                v = adyacencia.first;                 
 
                 if(du + duv < dist[v]){
                     dist[v] = du + duv;
@@ -67,10 +95,10 @@ void iniciarSimulacion(){
 
         for(i = 0; i < kSalidas; i++){
             scanf("%d", &nInter);
-            esSalida[nInter] = true; // esto probablemente lo cambie por una mascara de bits
+            esSalida[nInter] = true; 
         }   
         if(iniLion != iniMutantes){
-            distM = dijkstraEstados(iniMutantes);
+            distM = dijkstraMutantes(iniMutantes);
         } else {
             printf("Mumm-Ra captures Lion-O!\n");
         }
