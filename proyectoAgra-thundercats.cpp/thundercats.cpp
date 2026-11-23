@@ -13,7 +13,7 @@ vector<bool> esSalida;
 
 int nInter;
 const long long INF = 1e18;
-const double EPS = 1e-8; // agregamos epsilon necesario para la bbinaria
+const double EPS = 1e-7; // agregamos epsilon necesario para la bbinaria
 
 
 vector<long long> dijkstraMutantes(int s){
@@ -54,7 +54,7 @@ bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long
     long long du, duv, distAcumuladaNodo;
     bool flag = false;
     vector<long long> dist(nInter + 1, INF);
-    priority_queue<pair<long long, int>, vector<pair<long long, int> >, greater<pair<long long, int>>> pqueue;
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pqueue;
     dist[s] = 0;
     pqueue.push(make_pair(0, s));
 
@@ -72,6 +72,7 @@ bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long
                     v = adyacencia.first;
                     duv = adyacencia.second;
                     distAcumuladaNodo = du + duv;
+                    // Ajustar relajacion de velocidades en cada iteracion del dijkstra para ajustar ultimo digito (POSIBLE CORRECION)
                     if(distAcumuladaNodo < dist[v] && velMutantes * distAcumuladaNodo <= velLion * distM[v]){ // solo entra a v si es un camino mas corto y lion llega antes o igual que los mutantes y tambien se asegura que sea una distancia actualizada o que nos aporte algo en ese nuevo camino
                         dist[v] = distAcumuladaNodo;
                         pqueue.push(make_pair(distAcumuladaNodo, v));
@@ -86,7 +87,7 @@ bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long
 double busquedaBinaria(int iniLion, int vMax, long long cotaSuperior, vector<long long>& distM){
     double lo, hi, mid;
     lo = 0;
-    hi = vMax * cotaSuperior; 
+    hi = vMax * cotaSuperior;  // cambiar cota superior para que se ajuste el ultimo digito? (POSIBLES CORRECIONES)
     mid = (lo + hi) / 2;
     while(hi - lo > EPS && mid > lo && mid < hi){
         if(dijkstraProbarVelocidad(mid, iniLion, vMax, distM)){
@@ -127,11 +128,11 @@ void iniciarSimulacion(){
 
         distM = dijkstraMutantes(iniMutantes);
 
-        if(iniLion == iniMutantes || !dijkstraProbarVelocidad(1e18, iniLion, vMax, distM)){ // se prueba tambien que la ruta sea posible usando la maxima velocidad posible
+        if(!dijkstraProbarVelocidad(1e18, iniLion, vMax, distM)){ // se prueba tambien que la ruta sea posible usando la maxima velocidad posible
             printf("Mumm-Ra captures Lion-O!\n");
         } else {
             velMinima = busquedaBinaria(iniLion, vMax, cotaSuperior, distM);
-            printf("Lion-O can escape at a speed of %.6f km/h!\n", velMinima);
+            printf("Lion-O can escape at a speed of %.7f km/h!\n", velMinima);
         }
     }
 }
