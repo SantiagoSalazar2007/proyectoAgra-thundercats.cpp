@@ -75,6 +75,7 @@ bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long
                     // primero verificamos que no estemos en un camino mas largo a la interseccion adyacente 
                     // luego, (T = x * v) calculamos que lion llegue a la interseccion antes que los mutantes
                     if(distAcumuladaNodo < dist[v] && velMutantes * distAcumuladaNodo <= velLion * distM[v]){
+                        dist[v] = distAcumuladaNodo;
                         pqueue.push(make_pair(distAcumuladaNodo, v));
                     }
                 }
@@ -90,7 +91,8 @@ double busquedaBinaria(int iniLion, int vMax, long long cotaSuperior, vector<lon
     lo = 0; // cota inferior del intervalo inicial (v = 0, osea estar parado)
     hi = vMax * cotaSuperior; // cota superior (tiempo que tardan exactamente en llegar a cada nodo los mutantes) 
     mid = (lo + hi) / 2;
-    while(hi - lo > EPS){
+    // que sea un intervalo valido
+    while(hi - lo > EPS && mid > lo && mid < hi ){
         if(dijkstraProbarVelocidad(mid, iniLion, vMax, distM)){
             hi = mid; // monotona decreciente y buscamos minima velocidad
         } else {
