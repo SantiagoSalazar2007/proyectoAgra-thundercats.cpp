@@ -8,15 +8,15 @@
 
 using namespace std;
 
-vector<vector<pair<int, int>>> ady;
-vector<bool> esSalida;
+vector<vector<pair<int, int>>> ady; // Lista de adyacencia de cada interseccion
+vector<bool> esSalida; // Flags para cada interseccion indicando si es salida
 
-int nInter;
-const long long INF = 1e18;
-const double EPS = 1e-7; // agregamos epsilon necesario para la bbinaria
+int nInter; // Numero de intersecciones de cada caso
+const long long INF = 1e18; // Simulacion de infinito en c++
+const double EPS = 1e-7; // Tolerancia para parar cada busqueda binaria cuando el tamanio del intervalo sea menor
 
 
-vector<long long> dijkstraMutantes(int s){
+vector<long long> dijkstraMutantes(int s){  // dijkstra estandar para conocer la distancia desde la posición inicial de los mutantes hasta cada interseccion
     pair<long long, int> actual;
     pair<int, int> adyacencia;
     int i, u, v;
@@ -47,7 +47,7 @@ vector<long long> dijkstraMutantes(int s){
     return dist;
 }
 
-bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long long>& distM){
+bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long long>& distM){ // dijkstra modificado que retorna flag la cual prueba si es posible escapar con la velocidad dada
     pair<long long, int> actual;
     pair<int, int> adyacencia;
     int i, u, v;
@@ -65,33 +65,34 @@ bool dijkstraProbarVelocidad(double velLion, int s, int velMutantes, vector<long
 
         if(dist[u] == du){
             if(esSalida[u]){
-                flag = true;
+                flag = true; // si encuentra una salida, la velocidad si permite a Lion-O escapar de los mutantes
             } else {
                 for(i = 0; i < ady[u].size(); i++){
                     adyacencia = ady[u][i];
                     v = adyacencia.first;
                     duv = adyacencia.second;
                     distAcumuladaNodo = du + duv;
-                    // Ajustar relajacion de velocidades en cada iteracion del dijkstra para ajustar ultimo digito (POSIBLE CORRECION)
-                    if(distAcumuladaNodo < dist[v] && velMutantes * distAcumuladaNodo <= velLion * distM[v]){ // solo entra a v si es un camino mas corto y lion llega antes o igual que los mutantes y tambien se asegura que sea una distancia actualizada o que nos aporte algo en ese nuevo camino
-                        dist[v] = distAcumuladaNodo;
+                    // primero verificamos que no estemos en un camino mas largo a la interseccion adyacente 
+                    // luego, (T = x * v) calculamos que lion llegue a la interseccion antes que los mutantes
+                    if(distAcumuladaNodo < dist[v] && velMutantes * distAcumuladaNodo <= velLion * distM[v]){
                         pqueue.push(make_pair(distAcumuladaNodo, v));
                     }
                 }
             }
         }
     }
-    return flag;
+    return flag; // retornamos si se pudo llegar a una salida a tiempo
 }
 
-double busquedaBinaria(int iniLion, int vMax, long long cotaSuperior, vector<long long>& distM){
+double busquedaBinaria(int iniLion, int vMax, long long cotaSuperior, vector<long long>& distM){ // busqueda binaria con tolerancia en el tamanio del intervalo que busca velocidades 
+    // usando el dijkstraProbarVelocidad (dPV : velocidad -> tiempo)
     double lo, hi, mid;
-    lo = 0;
-    hi = vMax * cotaSuperior;  // cambiar cota superior para que se ajuste el ultimo digito? (POSIBLES CORRECIONES)
+    lo = 0; // cota inferior del intervalo inicial (v = 0, osea estar parado)
+    hi = vMax * cotaSuperior; // cota superior (tiempo que tardan exactamente en llegar a cada nodo los mutantes) 
     mid = (lo + hi) / 2;
-    while(hi - lo > EPS && mid > lo && mid < hi){
+    while(hi - lo > EPS){
         if(dijkstraProbarVelocidad(mid, iniLion, vMax, distM)){
-            hi = mid;
+            hi = mid; // monotona decreciente y buscamos minima velocidad
         } else {
             lo = mid;
         }
